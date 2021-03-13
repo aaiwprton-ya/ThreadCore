@@ -19,56 +19,68 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 find_package(Threads REQUIRED)
 
-set(SOURCE_FILES
-    main.cpp
-    convertor.cpp
-    thread.cpp
-    id.cpp
-    debug.cpp
-    argumentparser.cpp
-    troutputstream.cpp
-    trinputstream.cpp
-    interface.cpp
-    system.cpp
-    ifinputstream.cpp
-    ifoutputstream.cpp
-    ifsystem.cpp
-    room.cpp
-    module.cpp
-    package.cpp
-    pkinputstream.cpp
-    pkoutputstream.cpp
-    datapack.cpp)
-#    jsonloader.cpp
-#    jsonsaver.cpp)
+set(SOURCES
+    main.cpp)
+set(SOURCE_CORE
+    Core/system.cpp
+    Core/package.cpp
+    Core/interface.cpp
+    Core/thread.cpp
+    Core/module.cpp)
+set(SOURCE_DATAPACKS
+    )
+set(SOURCE_INTERFACES
+    )
+set(SOURCE_META
+    )
+set(SOURCE_THREADS
+    )
+set(SOURCE_UTILS
+    Utils/idgen.cpp)
+set(SOURCE_MODULES
+    Modules/md_iosystem.cpp)
 
-set(INCLUDE_FILES
-    sortedlist.h
-    convertor.h
-    thread.h
-    id.h
-    debug.h
-    argumentparser.h
-    troutputstream.h
-    trinputstream.h
-    interface.h
-    system.h
-    ifinputstream.h
-    ifoutputstream.h
-    enums.h
-    ifsystem.h
-    room.h
-    pool.h
-    module.h
-    package.h
-    pkinputstream.h
-    pkoutputstream.h
-    defines.h
-    datapack.h)
-#    jsonloader.h
-#    jsonsaver.h)
+set(HEADERS
+    std_afx.h)
+set(HEADER_CORE
+    Core/system.h
+    Core/package.h
+    Core/interface.h
+    Core/thread.h
+    Core/module.h)
+set(HEADER_DATAPACKS
+    )
+set(HEADER_INTERFACES
+    )
+set(HEADER_META
+    )
+set(HEADER_THREADS
+    )
+set(HEADER_UTILS
+    Utils/pool.h
+    Utils/idgen.h
+    Utils/sortedlist.h)
+set(HEADER_MODULES
+    Modules/md_iosystem.h)
 
-add_executable(ThreadCore ${SOURCE_FILES} ${INCLUDE_FILES})
+add_executable(ThreadCore
+    ${SOURCES}
+    ${SOURCE_CORE}
+    ${SOURCE_DATAPACKS}
+    ${SOURCE_INTERFACES}
+    ${SOURCE_META}
+    ${SOURCE_THREADS}
+    ${SOURCE_UTILS}
+    ${SOURCE_MODULES}
+
+    ${HEADERS}
+    ${HEADER_CORE}
+    ${HEADER_DATAPACKS}
+    ${HEADER_INTERFACES}
+    ${HEADER_META}
+    ${HEADER_THREADS}
+    ${HEADER_UTILS}
+    ${HEADER_MODULES})
 
 target_link_libraries(ThreadCore
     PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
