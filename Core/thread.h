@@ -44,7 +44,7 @@ public:
     void operator()();
 protected:
     virtual bool thread() = 0;
-    void _add_pack_link_(id_t &&index, std::string &&name, std::string &&module_name);
+    void _add_pack_link_(id_t &&index, std::string &&module_name, std::string &&name);
 public:
     void append_pack(Package *pack);
 public:

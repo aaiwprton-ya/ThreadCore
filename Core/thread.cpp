@@ -33,7 +33,7 @@ void Thread::operator()()
     while (thread()) {}
 }
 
-void Thread::_add_pack_link_(id_t &&index, std::string &&name, std::string &&module_name)
+void Thread::_add_pack_link_(id_t &&index, std::string &&module_name, std::string &&name)
 {
     _temp_pack_struct->emplace_back(std::move(index), std::move(name), std::move(module_name));
     _temp_pack_struct->sort();

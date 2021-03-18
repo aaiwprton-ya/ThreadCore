@@ -1,6 +1,7 @@
 #ifndef MD_IOSYSTEM_H
 #define MD_IOSYSTEM_H
 
+#include <iostream>
 #include "std_afx.h"
 #include "Core/module.h"
 #include "Core/thread.h"
@@ -9,8 +10,11 @@
 namespace md_iosystem
 {
 
-const std::string M_NAME = "IOSystem";
-const std::vector<std::string> P_NAME = { "OutputQueue" };
+const std::string THIS_NAME = "IOSystem";
+const PACK_LINKS THIS_PACKS = { PACK_LINK(THIS_NAME, "OutputQueue") };
+enum THIS_PACKS_NUMS { OUTPUT_QUEUE };
+const PACK_LINKS LINK_PACKS = {};
+enum LINK_PACKS_NUMS {};
 
 using namespace Core;
 

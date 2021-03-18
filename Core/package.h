@@ -48,15 +48,15 @@ class Package
 {
     __PackageBase__ __p_base__;
     std::mutex *__mtx__ = nullptr;                  // for inside use only
-    std::string name = "";                          // only for system
     std::string module_name = "";
+    std::string name = "";                          // only for system
     std::mutex *mtx = nullptr;                      // for shared use
     std::thread::id system;                         // system thread
     u_int joined = 0;                               // how many threads is shared joined now
     u_int disconnected = 0;                         // how many threads is disconnected after shered_lock
 public:
     Package();
-    Package(std::string name, std::string module_name, std::thread::id system);
+    Package(std::string module_name, std::string name, std::thread::id system);
     virtual ~Package();
     friend class System;
 public:

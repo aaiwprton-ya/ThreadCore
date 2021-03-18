@@ -1,7 +1,6 @@
 #ifndef STD_AFX_H
 #define STD_AFX_H
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include <list>

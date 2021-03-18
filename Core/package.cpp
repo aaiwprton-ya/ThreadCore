@@ -12,14 +12,13 @@ const __PackageBase__ &Package::getP_base() const
 
 Package::Package()
     : __mtx__(new std::mutex()),
-      name(""),
       mtx(new std::mutex()),
       system(-1) {}
 
-Package::Package(std::string name, std::string module_name, std::thread::id system)
+Package::Package(std::string module_name, std::string name, std::thread::id system)
     : __mtx__(new std::mutex()),
-      name(name),
       module_name(module_name),
+      name(name),
       mtx(new std::mutex()),
       system(system) {}
 
@@ -33,8 +32,8 @@ Package &Package::operator=(Package &&package)
             delete mtx; }
         __mtx__ = package.__mtx__;
         package.__mtx__ = nullptr;
-        name = package.name;
         module_name = package.module_name;
+        name = package.name;
         mtx = package.mtx;
         package.mtx = nullptr;
         system = package.system;

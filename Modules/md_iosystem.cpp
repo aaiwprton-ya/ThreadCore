@@ -4,15 +4,17 @@ namespace md_iosystem
 {
 
 ThreadType::TH_IOSystem(Interface *iface)
-    : Thread(iface) {
-    _add_pack_link_(0, std::string(P_NAME[0]), std::string(M_NAME)); }
+    : Thread(iface)
+{
+    int i = 0;
+    for (auto &item: THIS_PACKS) {
+        _add_pack_link_(i++, std::string(item.first), std::string(item.second)); }
+    for (auto &item: LINK_PACKS) {
+        _add_pack_link_(i++, std::string(item.first), std::string(item.second)); }
+}
 
 bool ThreadType::thread()
 {
-    //        cv::Mat mat = cv::imread("test_image.png");
-    //        std::string title = "Test OpenCV";
-    //        cv::imshow(title, mat);
-    //        int key = cv::waitKey(0);
     std::string cmd;
     PK_OutputQueue *p_output_queue = static_cast<PK_OutputQueue*>(packs[0]);
     while (true)
@@ -32,17 +34,19 @@ bool ThreadType::thread()
 }
 
 ModuleType::MD_IOSystem()
-    : Module(M_NAME)
+    : Module(THIS_NAME)
 {
-    for (size_t i = 0; i < P_NAME.size(); ++i)
+    pk_keys.insert(PK_KEY(THIS_PACKS[OUTPUT_QUEUE].second, new PK_OutputQueue::Key()));
+    for (auto &item: THIS_PACKS)
     {
-        pk_keys.insert(PK_KEY(P_NAME[0], new PK_OutputQueue::Key()));
-        pack_links.insert(PACK_LINK(M_NAME, P_NAME[0]));
-        thread_links.insert(THREAD_LINK(P_NAME[0], TH_LINKS({ TH_LINK(false, M_NAME) })));
-//        thread_links.insert(THREAD_LINK(P_NAME[0], TH_LINKS({ TH_LINK(false, "some_module_name") })));
+        pack_links.push_back(PACK_LINK(item.first, item.second));
+        thread_links.insert(THREAD_LINK(item.second, TH_LINKS({ TH_LINK(false, item.first) })));
     }
-//    iface_links.push_back("some_module_name");
-//    pack_links.insert(PACK_LINK("some_module_name", "some_package_name"));
+    for (auto &item: LINK_PACKS)
+    {
+        iface_links.push_back(item.first);
+        pack_links.push_back(PACK_LINK(item.first, item.second));
+    }
 }
 
 ModuleType::~MD_IOSystem()
@@ -53,11 +57,10 @@ ModuleType::~MD_IOSystem()
 
 void ModuleType::generate_packages(Pool<Package> *packs) const noexcept
 {
-    for (size_t i = 0; i < P_NAME.size(); ++i)
-    {
-        (*packs)[*static_cast<PK_OutputQueue::Key*>(pk_keys.at(P_NAME[i]))]
-                = PK_OutputQueue(P_NAME[i], M_NAME, std::this_thread::get_id());
-    }
+    (*packs)[*static_cast<PK_OutputQueue::Key*>(pk_keys.at(THIS_PACKS[OUTPUT_QUEUE].second))]
+            = PK_OutputQueue(THIS_PACKS[OUTPUT_QUEUE].first,
+                             THIS_PACKS[OUTPUT_QUEUE].second,
+                             std::this_thread::get_id());
 }
 
 void ModuleType::generate_interface(Pool<Interface> *ifaces) const noexcept {
@@ -75,7 +78,7 @@ void ModuleType::generate_thread(Pool<std::thread> *threads,
                                   Pool<Interface> *ifaces,
                                   Pool<Package> *packs,
                                   std::map<std::string,
-                                  Module *> *modules) const noexcept
+                                  Module*> *modules) const noexcept
 {
     ThreadType thread(&(*ifaces)[if_key]);
     const Package::__BasePackKey__ *p_key = nullptr;
@@ -96,9 +99,8 @@ void ModuleType::link_threads(Pool<std::thread> *threads,
     const Package::__BasePackKey__ *p_key = nullptr;
     for (auto &item: thread_links)
     {
-        if (item.first == P_NAME[0]) {
-            p_key = pk_keys.at(P_NAME[0]); }
-        else {
+        p_key = _get_pack_key_(item.first, THIS_PACKS, LINK_PACKS, pk_keys);
+        if (p_key == nullptr) {
             continue; }
         const Thread::__BaseThreadKey__ *t_key = nullptr;
         for (auto &i_second: item.second)
@@ -110,6 +112,7 @@ void ModuleType::link_threads(Pool<std::thread> *threads,
                 (*packs)[*p_key].connect_un_lock((*threads)[*t_key].get_id()); }
             t_key = nullptr;
         }
+        p_key = nullptr;
     }
 }
 
@@ -121,9 +124,8 @@ void ModuleType::disconnect(Pool<std::thread> *threads,
     const Package::__BasePackKey__ *p_key = nullptr;
     for (auto &item: thread_links)
     {
-        if (item.first == P_NAME[0]) {
-            p_key = pk_keys.at(P_NAME[0]); }
-        else {
+        p_key = _get_pack_key_(item.first, THIS_PACKS, LINK_PACKS, pk_keys);
+        if (p_key == nullptr) {
             continue; }
         const Thread::__BaseThreadKey__ *t_key = nullptr;
         for (auto &i_second: item.second)
@@ -135,6 +137,7 @@ void ModuleType::disconnect(Pool<std::thread> *threads,
                 (*packs)[*p_key].disconnect_un_lock((*threads)[*t_key].get_id()); }
             t_key = nullptr;
         }
+        p_key = nullptr;
     }
 }
 
@@ -143,10 +146,10 @@ BASE_IFKEY ModuleType::get_if_key() const noexcept {
 
 void ModuleType::get_pack_key(const BASE_PKEY *&p_key, std::string pack_name) const noexcept
 {
-    for (size_t i = 0; i < P_NAME.size(); ++i)
+    for (auto &item: THIS_PACKS)
     {
-        if (pack_name == P_NAME[i]) {
-            p_key = pk_keys.at(P_NAME[i]); }
+        if (pack_name == item.second) {
+            p_key = pk_keys.at(item.second); }
     }
 }
 
