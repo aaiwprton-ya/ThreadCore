@@ -68,6 +68,8 @@ public:
     };
 };
 
+typedef Thread::__BaseThreadKey__ BASE_THKEY;
+
 } // namespace Core
 
 #endif // THREAD_H

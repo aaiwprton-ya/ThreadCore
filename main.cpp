@@ -1,6 +1,4 @@
 #include "std_afx.h"
-//#include <iostream>
-//#include <vector>
 #include "Core/system.h"
 #include "Modules/md_iosystem.h"
 

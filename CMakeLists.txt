@@ -19,6 +19,12 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 find_package(Threads REQUIRED)
 
+set(OPENCV_INCLUDES /home/aaiwprton/.local_builds/opencv/include/opencv4/)
+set(OPENCV_LIBS /home/aaiwprton/.local_builds/opencv/lib/)
+
+include_directories(${OPENCV_INCLUDES})
+link_directories(${OPENCV_LIBS})
+
 set(SOURCES
     main.cpp)
 set(SOURCE_CORE
@@ -38,7 +44,10 @@ set(SOURCE_THREADS
 set(SOURCE_UTILS
     Utils/idgen.cpp)
 set(SOURCE_MODULES
-    Modules/md_iosystem.cpp)
+    Modules/md_iosystem.cpp
+    Modules/md_lfreader.cpp
+    Modules/pk_iosystem.cpp
+    Modules/pk_lfreader.cpp)
 
 set(HEADERS
     std_afx.h)
@@ -61,7 +70,10 @@ set(HEADER_UTILS
     Utils/idgen.h
     Utils/sortedlist.h)
 set(HEADER_MODULES
-    Modules/md_iosystem.h)
+    Modules/md_iosystem.h
+    Modules/md_lfreader.h
+    Modules/pk_iosystem.h
+    Modules/pk_lfreader.h)
 
 add_executable(ThreadCore
     ${SOURCES}
@@ -84,4 +96,9 @@ add_executable(ThreadCore
 
 target_link_libraries(ThreadCore
     PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-    Threads::Threads)
+    Threads::Threads
+    -lopencv_core
+    -lopencv_imgproc
+    -lopencv_imgcodecs
+    -lopencv_highgui
+    -lopencv_objdetect)

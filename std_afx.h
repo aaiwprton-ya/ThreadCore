@@ -12,6 +12,7 @@
 #include <memory>
 #include <cstddef>
 #include <memory.h>
+#include <opencv2/opencv.hpp>
 
 //#include "Utils/idgen.h"
 //#include "Utils/sortedlist.h"

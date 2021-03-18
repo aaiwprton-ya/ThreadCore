@@ -6,37 +6,26 @@
 
 namespace Core {
 
-//using namespace Utils;
+typedef std::vector<std::string> IFACE_LINKS;
+typedef std::string IFACE_LINK;
+typedef std::map<std::string, std::string> PACK_LINKS;
+typedef std::pair<std::string, std::string> PACK_LINK;
+typedef std::pair<bool, std::string> TH_LINK;
+typedef std::vector<TH_LINK> TH_LINKS;
+typedef std::map<std::string, TH_LINKS> THREAD_LINKS;
+typedef std::pair<std::string, TH_LINKS> THREAD_LINK;
+
+typedef Package::__BasePackKey__ BASE_PKEY;
+typedef std::map<std::string, BASE_PKEY*> PK_KEYS;
+typedef std::pair<std::string, BASE_PKEY*> PK_KEY;
+typedef Interface::__BaseIfaceKey__ BASE_IFKEY;
 
 class Module
 {
-/*
- * Package:
- *  - name
- *  - key
- *  - type
- *
- * Interface:
- *  - name
- *  - key
- *
- * Thread object:
- *  - temp point to the interface
- *  - type
- *  - key for thread
- *
- * Thread:
- *  - key from the thread object
- *  - temp point to the thread object
- *
- * 1) names the other moduls for the interfase access
- * 2) pairs of names the other objects and them package names for the packages access
- * 3) lists of module names for all of them packages
-*/
 protected:
-    std::vector<std::string> iface_links;
-    std::map<std::string, std::string> pack_links;
-    std::map<std::string, std::vector<std::pair<bool, std::string>>> thread_links;
+    IFACE_LINKS iface_links;
+    PACK_LINKS pack_links;
+    THREAD_LINKS thread_links;
 public:
     const std::string name;
 public:
