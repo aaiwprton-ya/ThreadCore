@@ -24,14 +24,20 @@ bool ThreadType::thread()
             std::cout << str << std::endl; }
         p_output_queue->unlock();
         std::cin >> cmd;
-        if (cmd == "stop") {
+        if (cmd == "stop")
+        {
+            if (iface->get_iface(0)->get_state() == TS_RUN) {
             iface->get_iface(0)->send_command(CV_STOP); }
-        if (cmd == "start") {
-            iface->activate_all(); }
+        }
+        if (cmd == "start")
+        {
+            if (iface->get_iface(0)->get_state() == TS_STOP) {
+            iface->get_iface(0)->activate(); }
+        }
         if (cmd == "exit")
         {
             iface->send_command_all(CV_TERMINATE);
-            iface->activate_all();
+            iface->try_activate_all();
             break;
         }
         p_output_queue->unique_lock();
