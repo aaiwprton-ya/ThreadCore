@@ -18,44 +18,44 @@ Interface::~Interface()
 
 Interface &Interface::operator=(Interface &&iface)
 {
-    if (this != &iface)
-    {
-        __ignore__ = iface.__ignore__;
-        if (mtx != nullptr) {
-            delete mtx; }
-        if (con_var != nullptr) {
-            delete con_var; }
-        mtx = iface.mtx;
-        iface.mtx = nullptr;
-        con_var = iface.con_var;
-        iface.con_var = nullptr;
-        state = iface.state;
-        ifaces = std::move(iface.ifaces);
-    }
+    if (this == &iface) {
+        return *this; }
+    if (mtx != nullptr) {
+        delete mtx; }
+    if (con_var != nullptr) {
+        delete con_var; }
+    ignore = iface.ignore;
+    mtx = iface.mtx;
+    iface.mtx = nullptr;
+    con_var = iface.con_var;
+    iface.con_var = nullptr;
+    ctrl_var = iface.ctrl_var;
+    state = iface.state;
+    ifaces = std::move(iface.ifaces);
     return *this;
 }
 
 void Interface::post_init_stopped() noexcept
 {
     std::unique_lock<std::mutex> un_lock(*mtx);
-    state = POST_INIT;
+    state = TS_POST_INIT;
     con_var->wait(un_lock);
-    state = RUN;
+    state = TS_RUN;
 }
 
 void Interface::stopped() noexcept
 {
     std::unique_lock<std::mutex> un_lock(*mtx);
-    state = STOP;
+    state = TS_STOP;
     con_var->wait(un_lock);
-    state = RUN;
+    state = TS_RUN;
 }
 
 void Interface::start() const noexcept
 {
     while (true)
     {
-        if (this->get_state() == POST_INIT)
+        if (this->get_state() == TS_POST_INIT)
         {
             con_var->notify_all();
             break;
@@ -65,23 +65,23 @@ void Interface::start() const noexcept
 
 void Interface::activate() noexcept
 {
-    while (!__ignore__)
+    while (!ignore)
     {
-        if (this->get_state() == STOP)
+        if (this->get_state() == TS_STOP)
         {
             con_var->notify_all();
             break;
         }
     }
-    __ignore__ = false;
+    ignore = false;
 }
 
 void Interface::try_activate() noexcept
 {
-    if (this->get_state() == STOP)
+    if (this->get_state() == TS_STOP)
     {
         con_var->notify_all();
-        __ignore__ = true;
+        ignore = true;
     }
 }
 
@@ -100,13 +100,33 @@ void Interface::try_activate_all() const noexcept
 void Interface::append_iface(Interface *iface) noexcept {
     ifaces.push_back(iface); }
 
-std::mutex *Interface::get_mtx() const noexcept {
-    return mtx; }
+void Interface::send_command(CTRL_VAR value) noexcept
+{
+    std::unique_lock<std::mutex> un_lock(*mtx);
+    ctrl_var = value;
+    ctrl_flag = true;
+}
 
-std::condition_variable *Interface::get_con_var() const noexcept {
-    return con_var; }
+void Interface::send_command_all(CTRL_VAR value) noexcept
+{
+    for (auto iface: ifaces) {
+        iface->send_command(value); }
+}
 
-th_state Interface::get_state() const noexcept
+CTRL_VAR Interface::check_command() noexcept
+{
+    if (ctrl_flag)
+    {
+        ctrl_flag = false;
+        std::unique_lock<std::mutex> un_lock(*mtx);
+        return ctrl_var;
+    }
+    else {
+        return CV_NOCMD; }
+    return CV_NOCMD;
+}
+
+TH_STATE Interface::get_state() const noexcept
 {
     std::unique_lock<std::mutex> un_lock(*mtx);
     return state;

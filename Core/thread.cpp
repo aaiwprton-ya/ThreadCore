@@ -30,7 +30,20 @@ Thread::~Thread()
 void Thread::operator()()
 {
     iface->post_init_stopped();
-    while (thread()) {}
+    bool __exit__ = false;
+    while (thread() && !__exit__)
+    {
+        switch (iface->check_command()) {
+        case CV_NOCMD:
+            break;
+        case CV_STOP:
+            iface->stopped();
+            break;
+        case CV_TERMINATE:
+            __exit__ = true;
+            break;
+        }
+    }
 }
 
 void Thread::_add_pack_link_(id_t &&index, std::string &&module_name, std::string &&name)

@@ -16,7 +16,7 @@ ThreadType::TH_IOSystem(Interface *iface)
 bool ThreadType::thread()
 {
     std::string cmd;
-    PK_OutputQueue *p_output_queue = static_cast<PK_OutputQueue*>(packs[0]);
+    PK_OutputQueue *p_output_queue = static_cast<PK_OutputQueue*>(packs[OUTPUT_QUEUE]);
     while (true)
     {
         p_output_queue->unique_lock();
@@ -24,8 +24,16 @@ bool ThreadType::thread()
             std::cout << str << std::endl; }
         p_output_queue->unlock();
         std::cin >> cmd;
-        if (cmd == "exit") {
-            break; }
+        if (cmd == "stop") {
+            iface->get_iface(0)->send_command(CV_STOP); }
+        if (cmd == "start") {
+            iface->activate_all(); }
+        if (cmd == "exit")
+        {
+            iface->send_command_all(CV_TERMINATE);
+            iface->activate_all();
+            break;
+        }
         p_output_queue->unique_lock();
         p_output_queue->queue.get().push_back(cmd);
         p_output_queue->unlock();
@@ -42,11 +50,10 @@ ModuleType::MD_IOSystem()
         pack_links.push_back(PACK_LINK(item.first, item.second));
         thread_links.insert(THREAD_LINK(item.second, TH_LINKS({ TH_LINK(false, item.first) })));
     }
-    for (auto &item: LINK_PACKS)
-    {
-        iface_links.push_back(item.first);
-        pack_links.push_back(PACK_LINK(item.first, item.second));
-    }
+    for (auto &item: LINK_PACKS) {
+        pack_links.push_back(PACK_LINK(item.first, item.second)); }
+    for (auto &item: LINK_IFACES) {
+        iface_links.push_back(item); }
 }
 
 ModuleType::~MD_IOSystem()

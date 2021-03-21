@@ -7,11 +7,13 @@
 #include <map>
 #include <thread>
 #include <mutex>
+#include <atomic>
 #include <condition_variable>
 #include <memory>
 #include <cstddef>
 #include <memory.h>
 #include <opencv2/opencv.hpp>
+#include <opencv2/videoio/videoio.hpp>
 
 //#include "Utils/idgen.h"
 //#include "Utils/sortedlist.h"

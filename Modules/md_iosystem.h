@@ -10,13 +10,15 @@
 namespace md_iosystem
 {
 
+using namespace Core;
+
 const std::string THIS_NAME = "IOSystem";
 const PACK_LINKS THIS_PACKS = { PACK_LINK(THIS_NAME, "OutputQueue") };
 enum THIS_PACKS_NUMS { OUTPUT_QUEUE };
+const unsigned int COUNT_PACKS = 1;
 const PACK_LINKS LINK_PACKS = {};
 enum LINK_PACKS_NUMS {};
-
-using namespace Core;
+const IFACE_LINKS LINK_IFACES = { "LFReader" };
 
 typedef class TH_IOSystem : public Thread
 {

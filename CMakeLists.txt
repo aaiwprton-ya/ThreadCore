@@ -101,4 +101,5 @@ target_link_libraries(ThreadCore
     -lopencv_imgproc
     -lopencv_imgcodecs
     -lopencv_highgui
-    -lopencv_objdetect)
+    -lopencv_objdetect
+    -lopencv_videoio)

@@ -12,15 +12,18 @@ namespace Core {
 
 using namespace Utils;
 
-enum th_state {INIT, POST_INIT, RUN, STOP};     // MOVE TO THE ENUMS FILE LATER
+enum TH_STATE {TS_INIT, TS_POST_INIT, TS_RUN, TS_STOP};     // MOVE TO THE ENUMS FILE LATER
+enum CTRL_VAR {CV_NOCMD, CV_STOP, CV_TERMINATE};
 
 class Interface
 {
-    bool __ignore__ = false;
-private:
+    bool ignore = false;
     std::mutex *mtx = nullptr;
     std::condition_variable *con_var = nullptr;
-    th_state state = INIT;
+    std::atomic<bool> ctrl_flag = false;
+    CTRL_VAR ctrl_var = CV_STOP;
+private:
+    TH_STATE state = TS_INIT;
     std::vector<Interface*> ifaces;
 public:
     Interface();
@@ -36,10 +39,11 @@ public:
     void activate_all() const noexcept;
     void try_activate_all() const noexcept;
     void append_iface(Interface *iface) noexcept;
+    void send_command(CTRL_VAR value) noexcept;
+    void send_command_all(CTRL_VAR value) noexcept;
+    CTRL_VAR check_command() noexcept;
 public:
-    std::mutex *get_mtx() const noexcept;
-    std::condition_variable *get_con_var() const noexcept;
-    th_state get_state() const noexcept;
+    TH_STATE get_state() const noexcept;
     Interface *get_iface(int index) const noexcept;
 public:
     class __BaseIfaceKey__
