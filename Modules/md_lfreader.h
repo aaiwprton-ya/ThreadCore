@@ -5,28 +5,48 @@
 #include "Core/module.h"
 #include "Core/thread.h"
 #include "Modules/pk_iosystem.h"
-#include "Modules/pk_lfreader.h"
+#include "Modules/pk_showimage.h"
 
 namespace md_lfreader
 {
 
 using namespace Core;
 
-const std::string THIS_NAME = "LFReader";
-const PACK_LINKS THIS_PACKS = { PACK_LINK(THIS_NAME, "FrameBuffer") };
-enum THIS_PACKS_NUMS { FRAME_BUFFER };
-const unsigned int COUNT_PACKS = 1;
-const PACK_LINKS LINK_PACKS = { PACK_LINK("IOSystem", "OutputQueue") };
-enum LINK_PACKS_NUMS { OUTPUT_QUEUE };
-const IFACE_LINKS LINK_IFACES = {};
+const MODULE_NAME SELF_NAME = MN_LFReader;
+const PACK_LINKS OWN_PACKS = {};
+enum THIS_PACKS_NUMS {};
+const PACK_LINKS LINKED_PACKS = { PACK_LINK(MN_IOSystem, PN_IOSystem_OutputQueue),
+                                PACK_LINK(MN_ShowImage, PN_ShowImage_FrameBuffer) };
+enum LINK_PACKS_NUMS { OUTPUT_QUEUE,
+                       FRAME_BUFFER };
+const IFACE_LINKS SUBORDINATE_IFACE_LINKS = { MN_ShowImage };
+enum SUBORDINATE_IFACE_NUMS { SBTI_ShowImage }; // SBTI_
+const IFACE_LINKS CONTROLLED_IFACE_LINKS = {};
+enum CONTROLLED_IFACE_NUMS {}; // CTRI_
+const IFACE_LINKS CONCURRENT_IFACE_LINKS = {};
+enum CONCURRENT_IFACE_NUMS {}; // CCRI_
+const ACCESS_SETTINGS AC_SETTINGS = {};
+
+const ModuleSettings m_settings(SELF_NAME,
+                                OWN_PACKS,
+                                LINKED_PACKS,
+                                SUBORDINATE_IFACE_LINKS,
+                                CONTROLLED_IFACE_LINKS,
+                                CONCURRENT_IFACE_LINKS,
+                                AC_SETTINGS);
 
 typedef class TH_LFReader : public Thread
 {
+    md_iosystem::PK_OutputQueue *output_queue = nullptr;
+    md_showimage::PK_FrameBuffer *frame_buffer = nullptr;
+private:
     cv::VideoCapture cap;
 public:
     TH_LFReader(Interface *iface);
 public:
     bool thread() override;
+public:
+    void _init_pack_pointers_() noexcept override;
 public:
     class Key : public __BaseThreadKey__ {
     public: typedef std::thread type; };
@@ -34,32 +54,14 @@ public:
 
 typedef class MD_LFReader : public Module
 {
-    PK_KEYS pk_keys;
-    BASE_IFKEY if_key;
     ThreadType::Key th_key;
 public:
     MD_LFReader();
     ~MD_LFReader();
 public:
-    void generate_packages(Pool<Package> *packs) const noexcept override;
-    void generate_interface(Pool<Interface> *ifaces) const noexcept override;
-    void link_interfaces(Pool<Interface> *ifaces,
-                         std::map<std::string,
-                         Module*> *modules) const noexcept override;
-    void generate_thread(Pool<std::thread> *threads,
-                         Pool<Interface> *ifaces,
-                         Pool<Package> *packs,
-                         std::map<std::string, Module*> *modules) const noexcept override;
-    void link_threads(Pool<std::thread> *threads,
-                         Pool<Package> *packs,
-                         std::map<std::string, Module*> *modules) const noexcept override;
-    void disconnect(Pool<std::thread> *threads,
-                         Pool<Package> *packs,
-                         std::map<std::string, Module*> *modules) const noexcept override;
-public:
-    BASE_IFKEY get_if_key() const noexcept override;
-    void get_pack_key(const BASE_PKEY *&p_key, std::string pack_name) const noexcept override;
-    void get_thread_key(const BASE_THKEY *&t_key) const noexcept override;
+    void generate_packages(PACKAGES *packs) const noexcept override;
+    void generate_thread(THRAEDS *threads, INTERFACES *ifaces,
+                         PACKAGES *packs, MODULES *modules) const noexcept override;
 } ModuleType;
 
 } // md_lfreader

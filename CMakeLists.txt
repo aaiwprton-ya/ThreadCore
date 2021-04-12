@@ -46,8 +46,11 @@ set(SOURCE_UTILS
 set(SOURCE_MODULES
     Modules/md_iosystem.cpp
     Modules/md_lfreader.cpp
+    Modules/md_showimage.cpp)
+set(SOURCE_PACKAGES
     Modules/pk_iosystem.cpp
-    Modules/pk_lfreader.cpp)
+    Modules/pk_lfreader.cpp
+    Modules/pk_showimage.cpp)
 
 set(HEADERS
     std_afx.h)
@@ -62,7 +65,7 @@ set(HEADER_DATAPACKS
 set(HEADER_INTERFACES
     )
 set(HEADER_META
-    )
+    Meta/definitions.h)
 set(HEADER_THREADS
     )
 set(HEADER_UTILS
@@ -72,8 +75,11 @@ set(HEADER_UTILS
 set(HEADER_MODULES
     Modules/md_iosystem.h
     Modules/md_lfreader.h
+    Modules/md_showimage.h)
+set(HEADER_PACKAGES
     Modules/pk_iosystem.h
-    Modules/pk_lfreader.h)
+    Modules/pk_lfreader.h
+    Modules/pk_showimage.h)
 
 add_executable(ThreadCore
     ${SOURCES}
@@ -84,6 +90,7 @@ add_executable(ThreadCore
     ${SOURCE_THREADS}
     ${SOURCE_UTILS}
     ${SOURCE_MODULES}
+    ${SOURCE_PACKAGES}
 
     ${HEADERS}
     ${HEADER_CORE}
@@ -92,7 +99,8 @@ add_executable(ThreadCore
     ${HEADER_META}
     ${HEADER_THREADS}
     ${HEADER_UTILS}
-    ${HEADER_MODULES})
+    ${HEADER_MODULES}
+    ${HEADER_PACKAGES})
 
 target_link_libraries(ThreadCore
     PRIVATE Qt${QT_VERSION_MAJOR}::Widgets

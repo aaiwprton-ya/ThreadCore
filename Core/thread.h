@@ -1,10 +1,6 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-//#include "std_afx.h"
-//#include <thread>
-//#include <vector>
-//#include <list>
 #include "Core/package.h"
 #include "Core/interface.h"
 
@@ -13,14 +9,14 @@ namespace Core {
 class __PackStructure__
 {
     id_t index = -1;
-    std::string name = "";
-    std::string module_name = "";
+    MODULE_NAME module_name = "";
+    PACKAGE_NAME name = "";
     Package *pack = nullptr;
 public:
-    __PackStructure__(id_t &&index, std::string &&name, std::string &&module_name)
+    __PackStructure__(id_t &&index, MODULE_NAME &&module_name, PACKAGE_NAME &&name)
         : index(std::move(index)),
-          name(std::move(name)),
-          module_name(std::move(module_name)) {}
+          module_name(std::move(module_name)),
+          name(std::move(name)) {}
     friend class Thread;
 public:
     bool operator==(const __PackStructure__ &value) {
@@ -44,8 +40,9 @@ public:
     void operator()();
 protected:
     virtual bool thread() = 0;
-    void _add_pack_link_(id_t &&index, std::string &&module_name, std::string &&name);
+    void _add_pack_link_(id_t &&index, MODULE_NAME &&module_name, PACKAGE_NAME &&name);
 public:
+    virtual void _init_pack_pointers_() noexcept = 0;
     void append_pack(Package *pack);
 public:
     class __BaseThreadKey__

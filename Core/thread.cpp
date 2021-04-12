@@ -29,26 +29,46 @@ Thread::~Thread()
 
 void Thread::operator()()
 {
-    iface->post_init_stopped();
     bool __exit__ = false;
-    while (thread() && !__exit__)
+    iface->post_init_stopped();
+    iface->send_command_all(CV_DISABLE);
+    CTRL_VAR command = CV_NOCMD;
+    while (true)
     {
-        switch (iface->check_command()) {
-        case CV_NOCMD:
-            break;
-        case CV_STOP:
-            iface->stopped();
-            break;
-        case CV_TERMINATE:
-            __exit__ = true;
-            break;
-        }
+        iface->set_state(TS_CHECKING);
+        command = iface->check_command();
+        do {
+            switch (command) {
+            case CV_NOCMD:
+                iface->wait();
+                break;
+            case CV_STOP:
+                iface->stop();
+                break;
+            case CV_DISABLE:
+                iface->disable();
+                break;
+            case CV_TERMINATE:
+                iface->terminate();
+                __exit__ = true;
+                break;
+            default:
+                break;
+            }
+            command = iface->check_command();
+        } while (command != CV_NOCMD);
+        if (__exit__) {
+            break; }
+        iface->set_state(TS_RUNNING);
+        if (!thread()) {
+            iface->send_command(CV_DISABLE); }
+        iface->wakeup_all();
     }
 }
 
-void Thread::_add_pack_link_(id_t &&index, std::string &&module_name, std::string &&name)
+void Thread::_add_pack_link_(id_t &&index, MODULE_NAME &&module_name, PACKAGE_NAME &&name)
 {
-    _temp_pack_struct->emplace_back(std::move(index), std::move(name), std::move(module_name));
+    _temp_pack_struct->emplace_back(std::move(index), std::move(module_name), std::move(name));
     _temp_pack_struct->sort();
 }
 

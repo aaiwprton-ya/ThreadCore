@@ -15,15 +15,6 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/videoio/videoio.hpp>
 
-//#include "Utils/idgen.h"
-//#include "Utils/sortedlist.h"
-//#include "Utils/pool.h"
-
-//#include "Core/package.h"
-//#include "Core/interface.h"
-//#include "Core/thread.h"
-//#include "Core/module.h"
-//#include "Core/system.h"
-//#include "Modules/md_iosystem.h"
+#include "Meta/definitions.h"
 
 #endif // STD_AFX_H

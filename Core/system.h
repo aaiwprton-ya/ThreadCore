@@ -17,10 +17,10 @@ class Module;
 
 class System
 {
-    Pool<Package> packs;
-    Pool<Interface> ifaces;
-    Pool<std::thread> threads;
-    std::map<std::string, Module*> modules;
+    PACKAGES packs;
+    INTERFACES ifaces;
+    THRAEDS threads;
+    MODULES modules;
 public:
     System();
     ~System();

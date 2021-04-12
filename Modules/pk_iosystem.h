@@ -16,7 +16,7 @@ public:
     Access::To<std::list<std::string>> queue;
 public:
     PK_OutputQueue();
-    PK_OutputQueue(std::string name, std::string modul_name, std::thread::id system);
+    PK_OutputQueue(MODULE_NAME module_name, PACKAGE_NAME name, std::thread::id system);
 public:
     PK_OutputQueue &operator=(PK_OutputQueue &&pack);
 public:

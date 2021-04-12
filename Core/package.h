@@ -2,17 +2,15 @@
 #define CORE_PACKAGE_H
 
 #include "std_afx.h"
-//#include <mutex>
-//#include <thread>
-//#include <vector>
-//#include <string>
-//#include <memory.h>
 #include "Utils/sortedlist.h"
 #include "Utils/idgen.h"
 
 namespace Core {
 
 using namespace Utils;
+
+typedef std::string MODULE_NAME;
+typedef std::string PACKAGE_NAME;
 
 class __Access__
 {
@@ -48,15 +46,15 @@ class Package
 {
     __PackageBase__ __p_base__;
     std::mutex *__mtx__ = nullptr;                  // for inside use only
-    std::string module_name = "";
-    std::string name = "";                          // only for system
+    MODULE_NAME module_name = "";
+    PACKAGE_NAME name = "";                         // only for system
     std::mutex *mtx = nullptr;                      // for shared use
     std::thread::id system;                         // system thread
     u_int joined = 0;                               // how many threads is shared joined now
     u_int disconnected = 0;                         // how many threads is disconnected after shered_lock
 public:
     Package();
-    Package(std::string module_name, std::string name, std::thread::id system);
+    Package(MODULE_NAME module_name, PACKAGE_NAME name, std::thread::id system);
     virtual ~Package();
     friend class System;
 public:

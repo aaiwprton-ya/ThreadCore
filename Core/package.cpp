@@ -15,7 +15,7 @@ Package::Package()
       mtx(new std::mutex()),
       system(-1) {}
 
-Package::Package(std::string module_name, std::string name, std::thread::id system)
+Package::Package(MODULE_NAME module_name, PACKAGE_NAME name, std::thread::id system)
     : __mtx__(new std::mutex()),
       module_name(module_name),
       name(name),
